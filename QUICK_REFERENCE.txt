@@ -1,0 +1,130 @@
+╔════════════════════════════════════════════════════════════════╗
+║           n8n + Receevi - Quick Reference Card                 ║
+╚════════════════════════════════════════════════════════════════╝
+
+📍 URLS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  n8n:     https://n8n.bytenex.io
+  Receevi: https://wa.bytenex.io
+
+🚀 DEPLOYMENT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  1. Upload files to server: /opt/cloud_docker/
+  2. SSH into server:         ssh ubuntu@YOUR_IP
+  3. Configure:               cp .env.example .env && nano .env
+  4. Deploy:                  sudo ./setup.sh
+
+⚙️ DAILY COMMANDS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  View logs:           docker compose logs -f
+  View specific:       docker compose logs -f n8n
+  Check status:        docker compose ps
+  Restart all:         docker compose restart
+  Restart one:         docker compose restart n8n
+  Stop all:            docker compose down
+  Start all:           docker compose up -d
+  Update:              ./update.sh
+  Troubleshoot:        ./troubleshoot.sh
+
+🔧 MAINTENANCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Update images:       docker compose pull
+  Prune unused:        docker system prune -a
+  Check disk:          df -h
+  Check memory:        free -h
+  Nginx test:          docker compose exec nginx nginx -t
+  Nginx reload:        docker compose exec nginx nginx -s reload
+
+💾 BACKUP & RESTORE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Backup:
+    docker run --rm \
+      -v cloud_docker_n8n_data:/n8n \
+      -v cloud_docker_receevi_data:/receevi \
+      -v $(pwd):/backup \
+      ubuntu tar czf /backup/backup-$(date +%Y%m%d).tar.gz /n8n /receevi
+
+  Restore:
+    docker run --rm \
+      -v cloud_docker_n8n_data:/n8n \
+      -v cloud_docker_receevi_data:/receevi \
+      -v $(pwd):/backup \
+      ubuntu tar xzf /backup/backup-YYYYMMDD.tar.gz -C /
+
+🔒 SSL CERTIFICATES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  List certs:          ls -la certbot/conf/live/
+  Test renewal:        docker compose run --rm certbot renew --dry-run
+  Force renewal:       docker compose run --rm certbot renew --force-renewal
+  Auto-renews:         Every 12 hours automatically
+
+🐛 TROUBLESHOOTING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Service down?        docker compose ps
+                       docker compose logs -f [service]
+                       docker compose restart [service]
+
+  SSL issues?          Check Cloudflare SSL mode (Full or Full Strict)
+                       Verify DNS points to server IP
+                       Check: ls -la certbot/conf/live/
+
+  Can't access?        Check firewall: sudo ufw status
+                       Check ports: sudo netstat -tulpn | grep -E ':(80|443)'
+                       Check DNS: nslookup n8n.bytenex.io
+
+  High memory?         docker stats
+                       docker compose restart
+
+📊 MONITORING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Container stats:     docker stats
+  Disk usage:          docker system df
+  Volume size:         docker volume ls
+  Network info:        docker network inspect cloud_docker_app-network
+
+🔐 SECURITY CHECKLIST
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ✓ SSL/TLS enabled (Let's Encrypt)
+  ✓ Auto-renewal configured
+  ✓ HTTPS redirect active
+  ✓ Security headers enabled
+  ✓ Cloudflare proxy active
+  ✓ Docker network isolated
+  ✓ Health checks running
+  ✓ Auto-restart on failure
+
+📁 FILE STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  /opt/cloud_docker/
+  ├── docker-compose.yml      # Main configuration
+  ├── .env                    # Environment variables
+  ├── setup.sh                # Initial setup script
+  ├── update.sh               # Update script
+  ├── troubleshoot.sh         # Diagnostic script
+  ├── nginx/
+  │   └── conf.d/
+  │       ├── n8n.conf        # n8n proxy config
+  │       └── receevi.conf    # Receevi proxy config
+  └── certbot/
+      ├── conf/               # SSL certificates
+      └── www/                # ACME challenge
+
+🌐 CLOUDFLARE SETTINGS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SSL/TLS Mode:        Full (strict) or Full
+  Always Use HTTPS:    ON
+  Auto HTTPS Rewrites: ON
+  DNS Records:         n8n.bytenex.io → Server IP (Orange ☁️)
+                       wa.bytenex.io → Server IP (Orange ☁️)
+
+📞 SUPPORT RESOURCES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  n8n Docs:            https://docs.n8n.io
+  Receevi Docs:        https://receevi.com/docs
+  Docker Docs:         https://docs.docker.com
+  Let's Encrypt:       https://letsencrypt.org
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  Keep this file handy for quick reference!
+  Print or save to your notes app.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

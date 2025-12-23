@@ -1,0 +1,59 @@
+cloud_docker/
+│
+├── 📄 START_HERE.md              ⭐ READ THIS FIRST - Complete overview
+├── 📄 DEPLOYMENT.md              🚀 Step-by-step deployment guide
+├── 📄 CHECKLIST.md               ✅ Pre-flight checklist
+├── 📄 QUICK_REFERENCE.txt        📋 Daily commands reference
+├── 📄 ARCHITECTURE.txt           🏗️  System architecture diagram
+├── 📄 README.md                  📚 Full documentation
+│
+├── 🐳 docker-compose.yml         ⚙️  Main Docker configuration
+├── 🔧 .env.example               📝 Environment template (EDIT THIS!)
+├── 🚫 .gitignore                 Git ignore rules
+│
+├── 🔨 setup.sh                   🚀 Main deployment script
+├── 🔄 update.sh                  ⬆️  Update services script
+├── 🔍 troubleshoot.sh            🐛 Diagnostic tool
+│
+└── 📁 nginx/                     Nginx configuration
+    └── 📁 conf.d/
+        ├── n8n.conf              n8n reverse proxy config
+        └── receevi.conf          Receevi reverse proxy config
+
+GENERATED DURING DEPLOYMENT:
+────────────────────────────
+├── 📁 certbot/                   SSL certificates
+│   ├── conf/                     Certificate files
+│   └── www/                      ACME challenge
+│
+└── 🗄️  Docker Volumes:
+    ├── n8n_data                  n8n workflows & settings
+    ├── receevi_data              Receevi configuration
+    └── receevi_sessions          WhatsApp sessions
+
+═══════════════════════════════════════════════════════════════
+
+📖 READING ORDER:
+
+1. START_HERE.md        - Overview and quick start
+2. CHECKLIST.md         - Verify prerequisites
+3. DEPLOYMENT.md        - Deploy step-by-step
+4. QUICK_REFERENCE.txt  - Keep for daily use
+
+═══════════════════════════════════════════════════════════════
+
+🔧 KEY FILES TO EDIT:
+
+Before deployment, you MUST:
+1. Copy: .env.example → .env
+2. Edit .env:
+   - Set SSL_EMAIL to your email
+   - Generate N8N_ENCRYPTION_KEY: openssl rand -base64 32
+
+═══════════════════════════════════════════════════════════════
+
+🚀 DEPLOYMENT COMMAND:
+
+sudo ./setup.sh
+
+═══════════════════════════════════════════════════════════════
